@@ -3497,3 +3497,95 @@ body {
     padding-bottom: 0;
   }
 }
+
+.custom-crystal {
+  min-width: 0;
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #ffffff18;
+  border-radius: 12px;
+  background: #0c1018;
+}
+.custom-crystal legend {
+  padding: 0 8px;
+  color: #e4dfd5;
+  font-size: 14px;
+}
+.custom-crystal-layout {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.crystal-wheel {
+  position: relative;
+  width: 154px;
+  height: 154px;
+  flex-shrink: 0;
+  margin: 8px auto;
+  border-radius: 50%;
+
+  touch-action: none;
+  cursor: crosshair;
+}
+.crystal-wheel-thumb {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px #000,
+    0 1px 5px #0008;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.crystal-color-fields {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+.crystal-color-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #b4bdca;
+  font-size: 14px;
+}
+.crystal-color-fields input[type='range'] {
+  width: 100%;
+  height: 30px;
+  accent-color: var(--crystal);
+  cursor: pointer;
+}
+.crystal-color-fields .crystal-hex {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.crystal-hex input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #ffffff30;
+  border-radius: 6px;
+  background: #171d29;
+  padding: 8px;
+  color: white;
+  font: 16px monospace;
+}
+.crystal-color-fields input:focus-visible {
+  outline: 2px solid #e1cda8;
+  outline-offset: 3px;
+}
+
+.crystal-wheel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle, white 0%, transparent 70.7%),
+    conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+  filter: brightness(var(--wheel-brightness, 1));
+  pointer-events: none;
+}

@@ -76,7 +76,7 @@ export type Config = {
   grip: (typeof grips)[number];
   finish: (typeof finishes)[number]['id'];
   accent: (typeof accents)[number]['id'];
-  crystal: (typeof crystals)[number]['id'];
+  crystal: (typeof crystals)[number]['id'] | `#${string}`;
   name: string;
 };
 export const defaultConfig: Config = {
@@ -104,6 +104,9 @@ export function parseConfig(search: string): Config {
     if (v && (values as readonly string[]).includes(v))
       Object.assign(c, { [key]: v });
   }
+  const custom = p.get('crystal');
+  if (custom && /^#[0-9a-f]{6}$/i.test(custom))
+    c.crystal = custom.toLowerCase() as `#${string}`;
   c.name =
     (p.get('name') || defaultConfig.name)
       .replace(/[\u0000-\u001f\u007f]/g, '')
@@ -114,6 +117,16 @@ export function parseConfig(search: string): Config {
 export function serializeConfig(config: Config) {
   return new URLSearchParams({ v: '1', ...config }).toString();
 }
+export function resolveCrystal(value: Config['crystal']) {
+  if (/^#[0-9a-f]{6}$/i.test(value)) {
+    return {
+      name: `Custom ${value.toUpperCase()}`,
+      color: value,
+      description: 'Your own signature in the galaxy.',
+    };
+  }
+  return crystals.find((x) => x.id === value) ?? crystals[2];
+}
 export function buildDescription(c: Config) {
-  return `${hilts.find((x) => x.id === c.hilt)!.name} / ${finishes.find((x) => x.id === c.finish)!.name} / ${crystals.find((x) => x.id === c.crystal)!.name}`;
+  return `${hilts.find((x) => x.id === c.hilt)!.name} / ${finishes.find((x) => x.id === c.finish)!.name} / ${resolveCrystal(c.crystal).name}`;
 }

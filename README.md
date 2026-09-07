@@ -52,7 +52,7 @@ This image serves the current static application. If server functions or other b
 - Dark charcoal and brass atelier theme, with a full-viewport stage and a persistent step dock.
 - Preloaded client navigation and progressive crossfades between the galaxy and atelier.
 - A floating assembly and light-sweep entrance for the 3D saber.
-- 1,215 combinations of hilt, emitter, grip, finish, accent, and crystal.
+- 1,215 preset combinations, plus custom crystal colors with a touch color wheel, keyboard-accessible sliders, and hex input. Custom colors are included in shared links and exported cards.
 - Rotate, zoom, and inspect the exploded assembly.
 - Crystal chamber reveal and cinematic blade ignition.
 - Original synthesized ignition and hum; explicit audio interaction and mute.

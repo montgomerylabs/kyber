@@ -7,7 +7,7 @@ import {
   OrbitControls,
 } from '@react-three/drei';
 import * as THREE from 'three';
-import { accents, crystals, finishes, type Config } from '../lib/config';
+import { accents, resolveCrystal, finishes, type Config } from '../lib/config';
 
 function Metal({
   color,
@@ -89,7 +89,7 @@ function Saber({
   const blade = useRef<THREE.Group>(null);
   const finish = finishes.find((x) => x.id === config.finish)!;
   const accent = accents.find((x) => x.id === config.accent)!.color;
-  const light = crystals.find((x) => x.id === config.crystal)!.color;
+  const light = resolveCrystal(config.crystal).color;
   const slim = config.hilt === 'duelist';
   const relic = config.hilt === 'relic';
   const radius = slim ? 0.275 : relic ? 0.355 : 0.32;

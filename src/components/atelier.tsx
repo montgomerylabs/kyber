@@ -41,6 +41,7 @@ import {
   accents,
   buildDescription,
   crystals,
+  resolveCrystal,
   defaultConfig,
   emitters,
   finishes,
@@ -51,6 +52,7 @@ import {
   type Config,
 } from '../lib/config';
 import { useSaberAudio } from '../lib/audio';
+import { CrystalColorPicker } from './crystal-color-picker';
 const SaberScene = lazy(() => import('./saber-scene'));
 class SceneBoundary extends Component<
   { children: ReactNode; onError: () => void },
@@ -174,12 +176,15 @@ export function Atelier() {
     };
   }, []);
   useEffect(() => {
-    if (mounted)
+    if (!mounted) return;
+    const timer = window.setTimeout(() => {
       window.history.replaceState(
         window.history.state,
         '',
         `${window.location.pathname}?${serializeConfig(config)}`,
       );
+    }, 120);
+    return () => window.clearTimeout(timer);
   }, [config, mounted]);
   useEffect(() => {
     if (!notice) return;
@@ -225,7 +230,7 @@ export function Atelier() {
   );
   const hilt = hilts.find((x) => x.id === config.hilt)!;
   const finish = finishes.find((x) => x.id === config.finish)!;
-  const crystal = crystals.find((x) => x.id === config.crystal)!;
+  const crystal = resolveCrystal(config.crystal);
   const update = <K extends keyof Config>(key: K, value: Config[K]) => {
     setConfig((c) => ({ ...c, [key]: value }));
     audio.click();
@@ -720,6 +725,12 @@ export function Atelier() {
                     ))}
                   </RadioGroup>
                 </fieldset>
+                <CrystalColorPicker
+                  color={crystal.color}
+                  onChange={(color) =>
+                    setConfig((c) => ({ ...c, crystal: color }))
+                  }
+                />
                 <div className="crystal-story">
                   <Gem size={28} strokeWidth={1} />
                   <h3>{crystal.name}.</h3>

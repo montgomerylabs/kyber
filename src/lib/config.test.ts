@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   accents,
+  resolveCrystal,
+  buildDescription,
   crystals,
   defaultConfig,
   emitters,
@@ -46,4 +48,26 @@ test('names are bounded and empty names use a safe default', () => {
   );
   assert.equal(parseConfig('?name=%00%20').name, defaultConfig.name);
   assert.equal(parseConfig('').name, 'Afterglow');
+});
+
+test('custom crystal colors round trip and normalize safely', () => {
+  for (const crystal of ['#00e5ff', '#000000', '#ffffff'] as const) {
+    const c = { ...defaultConfig, crystal };
+    assert.deepEqual(parseConfig(serializeConfig(c)), c);
+  }
+  assert.equal(parseConfig('crystal=%23ABCDEF').crystal, '#abcdef');
+  for (const value of ['#fff', '#12345678', '#zzzzzz', 'url(x)', 'custom']) {
+    assert.equal(
+      parseConfig(new URLSearchParams({ crystal: value }).toString()).crystal,
+      'violet',
+    );
+  }
+});
+
+test('custom crystal color and description reach rendering and exports', () => {
+  const c = { ...defaultConfig, crystal: '#00e5ff' as const };
+  assert.equal(resolveCrystal(c.crystal).color, '#00e5ff');
+  assert.match(buildDescription(c), /Custom #00E5FF/);
+  for (const preset of crystals)
+    assert.equal(resolveCrystal(preset.id), preset);
 });
