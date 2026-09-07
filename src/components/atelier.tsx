@@ -10,11 +10,9 @@ import {
   type ReactNode,
 } from 'react';
 import {
-  ArrowDown,
   ArrowLeft,
   ArrowRight,
   Check,
-  ChevronRight,
   Download,
   Expand,
   Gem,
@@ -28,6 +26,7 @@ import {
   VolumeX,
   X,
 } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -116,6 +115,7 @@ export function Atelier() {
   const [step, setStep] = useState('hilt');
   const [mounted, setMounted] = useState(false);
   const [ready, setReady] = useState(false);
+  const [arrival, setArrival] = useState(true);
   const [sceneFailed, setSceneFailed] = useState(false);
   const [exploded, setExploded] = useState(false);
   const [cinematic, setCinematic] = useState(false);
@@ -134,6 +134,11 @@ export function Atelier() {
   const sceneReady = useCallback(() => setReady(true), []);
   const audio = useSaberAudio(muted);
   useEffect(() => {
+    if (!ready) return;
+    const done = setTimeout(() => setArrival(false), 3500);
+    return () => clearTimeout(done);
+  }, [ready]);
+  useEffect(() => {
     setConfig(parseConfig(window.location.search));
     setMounted(true);
     const m = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -150,7 +155,7 @@ export function Atelier() {
   useEffect(() => {
     if (mounted)
       window.history.replaceState(
-        null,
+        window.history.state,
         '',
         `${window.location.pathname}?${serializeConfig(config)}`,
       );
@@ -205,6 +210,7 @@ export function Atelier() {
     audio.click();
   };
   const ignite = () => {
+    setArrival(false);
     audio.unlock();
     setCinematic(true);
     setIgnited(false);
@@ -310,56 +316,38 @@ export function Atelier() {
   };
   return (
     <div
-      className="atelier"
+      className={`atelier atelier-workspace ${ready ? 'atelier-ready' : ''}`}
       style={{ '--crystal': crystal.color } as CSSProperties}
     >
       <a className="skip-link" href="#configurator">
         Skip to configurator
       </a>
-      <header className="site-header">
-        <a className="wordmark" href="/" aria-label="KYBER home">
+      <header className="site-header workspace-header">
+        <Link
+          className="wordmark"
+          to="/"
+          aria-label="KYBER home"
+          viewTransition={!reducedMotion}
+        >
           KYBER<span>THE LIGHTSABER ATELIER</span>
-        </a>
-        <nav aria-label="Main navigation">
-          <button
-            className="nav-link active"
-            onClick={() =>
-              document.getElementById('configurator')?.scrollIntoView({
-                behavior: reducedMotion ? 'instant' : 'smooth',
-              })
-            }
+        </Link>
+        <div className="workspace-title">
+          <span /> Your story, taking shape.
+        </div>
+        <div className="workspace-header-actions">
+          <Link
+            className="back-to-galaxy"
+            to="/"
+            viewTransition={!reducedMotion}
           >
-            The atelier
+            <ArrowLeft size={14} /> The galaxy
+          </Link>
+          <button className="workspace-save" onClick={() => setShareOpen(true)}>
+            <Download size={15} /> Save build
           </button>
-          <button className="nav-link" onClick={() => setStoryOpen(true)}>
-            Our philosophy
-          </button>
-        </nav>
-        <button className="cave-link" onClick={() => setStoryOpen(true)}>
-          A Coding Cave experiment <span>↗</span>
-        </button>
+        </div>
       </header>
       <main>
-        <section className="intro">
-          <div>
-            <div className="eyebrow">
-              <span className="tiny-star">✳</span> BUILT BY YOU. GUIDED BY THE
-              FORCE.
-            </div>
-            <h1>
-              Your saber. <span>Your story.</span>
-            </h1>
-            <p>An elegant weapon. An entirely personal one.</p>
-          </div>
-          <div className="intro-note">
-            <span>
-              ONE OF A KIND.
-              <br />
-              BY DESIGN.
-            </span>
-            <ArrowDown size={19} />
-          </div>
-        </section>
         <section
           id="configurator"
           className="configurator"
@@ -412,6 +400,7 @@ export function Atelier() {
                   <Suspense fallback={null}>
                     <SaberScene
                       config={config}
+                      arrival={arrival}
                       exploded={exploded || step === 'crystal'}
                       ignited={ignited}
                       cinematic={cinematic}
@@ -440,7 +429,10 @@ export function Atelier() {
                       hilts.findIndex((x) => x.id === config.hilt) + 1,
                     ).padStart(2, '0')}
                   </span>
-                  <h2>The {hilt.name}.</h2>
+                  <h1>
+                    {hilt.name}
+                    <span>.</span>
+                  </h1>
                   <span>
                     {finish.name} /{' '}
                     {accents.find((x) => x.id === config.accent)!.name} accents
@@ -580,15 +572,6 @@ export function Atelier() {
                   values={grips}
                   onChange={(v) => update('grip', v as Config['grip'])}
                 />
-                <div className="panel-foot">
-                  <span>Designed to feel like an extension of you.</span>
-                  <button
-                    onClick={() => setStep('finish')}
-                    aria-label="Continue to finish"
-                  >
-                    <ArrowRight size={20} />
-                  </button>
-                </div>
               </TabsContent>
               <TabsContent value="finish">
                 <div className="panel-heading">
@@ -663,15 +646,6 @@ export function Atelier() {
                         : 'Warm bronze and softened reflections. The character of a well-traveled companion.'}
                   </p>
                 </div>
-                <div className="panel-foot">
-                  <span>The smallest details make it yours.</span>
-                  <button
-                    onClick={() => setStep('crystal')}
-                    aria-label="Continue to crystal"
-                  >
-                    <ArrowRight size={20} />
-                  </button>
-                </div>
               </TabsContent>
               <TabsContent value="crystal">
                 <div className="panel-heading">
@@ -714,78 +688,59 @@ export function Atelier() {
                   <p>{crystal.description}</p>
                   <span>A small crystal. An extraordinary possibility.</span>
                 </div>
-                <div className="panel-foot">
-                  <span>Your saber is ready for its first light.</span>
-                  <Check size={18} />
-                </div>
               </TabsContent>
             </Tabs>
-          </div>
-        </section>
-        <section className="build-bar" aria-label="Build summary">
-          <div className="build-summary">
-            <span
-              className="summary-gem"
-              style={{ background: crystal.color }}
-            />
-            <div>
-              <strong>Your {hilt.name}</strong>
-              <span>
-                {finish.name} <i>·</i> {crystal.name} crystal
-              </span>
+            <div className="atelier-dock">
+              <div className="dock-summary">
+                <span
+                  className="summary-gem"
+                  style={{ background: crystal.color }}
+                />
+                <div>
+                  <strong>Your {hilt.name}</strong>
+                  <span>
+                    {finish.name} · {crystal.name} crystal
+                  </span>
+                </div>
+              </div>
+              <div className="dock-actions">
+                {step !== 'hilt' && (
+                  <Button
+                    variant="ghost"
+                    className="dock-back"
+                    onClick={() =>
+                      setStep(step === 'crystal' ? 'finish' : 'hilt')
+                    }
+                    aria-label={
+                      step === 'crystal' ? 'Back to finish' : 'Back to hilt'
+                    }
+                  >
+                    <ArrowLeft size={18} />
+                  </Button>
+                )}
+                <Button
+                  className="ignite-button"
+                  disabled={step === 'crystal' && !ready}
+                  onClick={() =>
+                    step === 'crystal'
+                      ? ignite()
+                      : setStep(step === 'hilt' ? 'finish' : 'crystal')
+                  }
+                >
+                  {step === 'crystal' ? (
+                    <>
+                      <Power size={17} /> Ignite your saber
+                    </>
+                  ) : (
+                    `Continue to ${step === 'hilt' ? 'finish' : 'crystal'}`
+                  )}
+                  <ArrowRight size={18} />
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="build-actions">
-            <button className="save-link" onClick={() => setShareOpen(true)}>
-              Save your build <ChevronRight size={16} />
-            </button>
-            <Button
-              className="ignite-button"
-              disabled={!ready}
-              onClick={ignite}
-            >
-              <Power size={17} /> Ignite your saber <ArrowRight size={18} />
-            </Button>
-          </div>
-        </section>
-        <section className="craft-strip">
-          <div>
-            <span className="eyebrow">AN EXTENSION OF YOU.</span>
-            <p>
-              Extraordinary by nature.
-              <br />
-              <span>Personal by design.</span>
-            </p>
-          </div>
-          <div className="spec-detail">
-            <span>HILT LENGTH</span>
-            <strong>
-              {hilt.length}
-              <small> cm</small>
-            </strong>
-          </div>
-          <div className="spec-detail">
-            <span>DESIGN WEIGHT</span>
-            <strong>
-              {hilt.weight}
-              <small> kg</small>
-            </strong>
-          </div>
-          <div className="spec-detail">
-            <span>POSSIBILITIES</span>
-            <strong>
-              1,215<small> combinations</small>
-            </strong>
           </div>
         </section>
       </main>
-      <footer className="site-footer">
-        <span className="footer-logo">KYBER</span>
-        <p>A love letter to a galaxy far, far away.</p>
-        <span>
-          Crafted in the Coding Cave <span className="footer-star">✳</span>
-        </span>
-      </footer>
       <Dialog
         open={shareOpen}
         onOpenChange={(v) => {

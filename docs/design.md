@@ -32,3 +32,11 @@ Every option changes the model without resetting other choices. Component dimens
 ## Death Star arrival
 
 On a fresh landing-page load, the loaded artwork triggers a 5.6-second establishing shot: a close, dim view pulls back into the hangar, the station emerges from shadow, and a cool reflected-light pass sweeps over the artwork. The headline and invitation follow in a staggered reveal; the scene settles into the existing ambient drift. Pointer parallax stays independent of the camera animation. Navigation remains available throughout, keyboard focus reveals the main button immediately, and reduced-motion mode shows the settled composition directly. Cached and failed image loads both release the content reveal.
+
+## Continuous journey and focused workspace
+
+The landing page preloads the builder route and its 3D module on idle, hover, and focus. Entry uses TanStack Router client navigation and progressive browser view transitions, preserving query configuration without a full document reload. The brand stays visually anchored while the scene crossfades. Browsers without View Transitions still navigate in-app; reduced-motion mode skips the transition.
+
+The atelier occupies the viewport: a large object stage beside one independently scrolling control panel. A fixed panel dock summarizes the build and progresses through Finish, Crystal, and Ignition. Save and return-to-galaxy actions stay in the masthead. On mobile, the stage sits above the scrollable controls, with the next action remaining visible. Short landscape viewports use normal scrolling. Repeated hero, specification, and promotional footer sections have been removed.
+
+On atelier entry, the hilt floats in as an exploded assembly, turns through a cool moving light, and closes around the crystal over about three seconds. This sequence runs once per entry, without replaying on option changes or return from ignition. The loaded 3D model fades in after its first rendered frames. Reduced-motion mode shows the assembled saber immediately.

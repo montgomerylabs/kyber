@@ -24,7 +24,9 @@ TanStack Start prerenders the landing page and `/build` route into `dist/client`
 ## Features
 
 - Cinematic galactic landing page with animated atmosphere and an entrance transition.
-- Dark charcoal and brass atelier theme.
+- Dark charcoal and brass atelier theme, with a full-viewport stage and a persistent step dock.
+- Preloaded client navigation and progressive crossfades between the galaxy and atelier.
+- A floating assembly and light-sweep entrance for the 3D saber.
 - 1,215 combinations of hilt, emitter, grip, finish, accent, and crystal.
 - Rotate, zoom, and inspect the exploded assembly.
 - Crystal chamber reveal and cinematic blade ignition.

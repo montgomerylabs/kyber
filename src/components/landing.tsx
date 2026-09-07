@@ -1,15 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from '@tanstack/react-router';
+import { preloadSaberScene } from '../lib/preload-atelier';
+import { parseConfig } from '../lib/config';
 import { ArrowDownRight, ArrowUpRight, MoveUpRight } from 'lucide-react';
 
 export function Landing() {
+  const router = useRouter();
   const [entering, setEntering] = useState(false);
+  const [navigationError, setNavigationError] = useState('');
+  const navigationActive = useRef(false);
+  const alive = useRef(true);
+  const primeAtelier = useCallback(
+    () =>
+      Promise.all([
+        router.preloadRoute({
+          to: '/build',
+          search: parseConfig(window.location.search),
+        }),
+        preloadSaberScene(),
+      ]),
+    [router],
+  );
   const [sceneLoaded, setSceneLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const [buildHref, setBuildHref] = useState('/build');
   const [reducedMotion, setReducedMotion] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    alive.current = true;
+    const preloadTimer = setTimeout(() => {
+      void primeAtelier().catch(() => {});
+    }, 1800);
     setBuildHref(`/build${window.location.search}`);
     if (imageRef.current?.complete) setSceneLoaded(true);
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -18,20 +39,36 @@ export function Landing() {
     media.addEventListener('change', change);
     return () => {
       media.removeEventListener('change', change);
-      if (timer.current) clearTimeout(timer.current);
+      alive.current = false;
+      clearTimeout(preloadTimer);
     };
-  }, []);
-  const enter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  }, [primeAtelier]);
+  const enter = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
-    if (entering) return;
+    if (navigationActive.current) return;
+    navigationActive.current = true;
+    setNavigationError('');
     setEntering(true);
-    timer.current = setTimeout(
-      () => {
-        window.location.assign(buildHref);
-      },
-      reducedMotion ? 0 : 850,
-    );
+    try {
+      // Keep the scene visible while the route and renderer warm up.
+      await Promise.all([
+        primeAtelier().catch(() => {}),
+        new Promise((resolve) => setTimeout(resolve, reducedMotion ? 0 : 280)),
+      ]);
+      if (!alive.current) return;
+      await router.navigate({
+        to: '/build',
+        search: parseConfig(window.location.search),
+        viewTransition: !reducedMotion,
+      });
+    } catch {
+      if (alive.current) {
+        navigationActive.current = false;
+        setEntering(false);
+        setNavigationError('The atelier couldn’t open. Please try again.');
+      }
+    }
   };
   return (
     <main
@@ -73,7 +110,17 @@ export function Landing() {
           KYBER<span>THE LIGHTSABER ATELIER</span>
         </a>
         <span className="galaxy-header-note">A CODING CAVE EXPERIMENT</span>
-        <a className="galaxy-nav-link" href={buildHref} onClick={enter}>
+        <a
+          className="galaxy-nav-link"
+          href={buildHref}
+          onClick={enter}
+          onPointerEnter={() => {
+            void primeAtelier().catch(() => {});
+          }}
+          onFocus={() => {
+            void primeAtelier().catch(() => {});
+          }}
+        >
           Enter the atelier <ArrowUpRight size={16} />
         </a>
       </header>
@@ -98,6 +145,12 @@ export function Landing() {
           className="journey-button"
           href={buildHref}
           onClick={enter}
+          onPointerEnter={() => {
+            void primeAtelier().catch(() => {});
+          }}
+          onFocus={() => {
+            void primeAtelier().catch(() => {});
+          }}
           aria-busy={entering}
         >
           <span>{entering ? 'Your story begins…' : 'Begin your journey'}</span>
@@ -135,6 +188,11 @@ export function Landing() {
           </span>
         </footer>
       </div>
+      {navigationError && (
+        <p className="navigation-error" role="alert">
+          {navigationError}
+        </p>
+      )}
       <span className="sr-only" role="status">
         {entering ? 'Entering the lightsaber atelier.' : ''}
       </span>

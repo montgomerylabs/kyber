@@ -72,14 +72,18 @@ function Saber({
   ignited,
   cinematic,
   reducedMotion,
+  arrival,
 }: {
   config: Config;
   exploded: boolean;
   ignited: boolean;
   cinematic: boolean;
   reducedMotion: boolean;
+  arrival: boolean;
 }) {
   const root = useRef<THREE.Group>(null);
+  const entranceTime = useRef(0);
+  const entranceLight = useRef<THREE.PointLight>(null);
   const upper = useRef<THREE.Group>(null);
   const lower = useRef<THREE.Group>(null);
   const blade = useRef<THREE.Group>(null);
@@ -98,32 +102,47 @@ function Saber({
     }
   }, [config.emitter]);
   useFrame(({ clock }, dt) => {
+    entranceTime.current += Math.min(dt, 0.05);
+    const opening =
+      cinematic || reducedMotion || !arrival
+        ? 1
+        : THREE.MathUtils.smootherstep(entranceTime.current, 0.35, 3.15);
+    const gathering =
+      cinematic || reducedMotion || !arrival
+        ? 1
+        : THREE.MathUtils.smootherstep(entranceTime.current, 0.65, 2.6);
     const speed = reducedMotion ? 1 : 1 - Math.exp(-dt * 5);
+    if (entranceLight.current) {
+      entranceLight.current.intensity = 9 * Math.sin(Math.PI * opening);
+      entranceLight.current.position.x = -3 + opening * 7;
+    }
     if (root.current) {
       root.current.rotation.z = THREE.MathUtils.lerp(
         root.current.rotation.z,
-        cinematic ? -0.24 : -0.53,
+        cinematic ? -0.24 : -0.53 - (1 - opening) * 0.22,
         speed,
       );
       root.current.position.y = THREE.MathUtils.lerp(
         root.current.position.y,
-        cinematic ? -2.4 : 0,
+        cinematic ? -2.4 : -(1 - opening) * 0.3,
         speed,
       );
-      if (!reducedMotion)
-        root.current.rotation.y = Math.sin(clock.elapsedTime * 0.25) * 0.11;
+      root.current.scale.setScalar(0.9 + opening * 0.1);
+      root.current.rotation.y = reducedMotion
+        ? 0
+        : Math.sin(clock.elapsedTime * 0.25) * 0.11 - (1 - opening) * 1.25;
     }
     swap.current = THREE.MathUtils.lerp(swap.current, 0, speed);
     if (upper.current)
       upper.current.position.y = THREE.MathUtils.lerp(
         upper.current.position.y,
-        (exploded ? 0.75 : 0) + swap.current,
+        (exploded ? 0.75 : (1 - gathering) * 0.95) + swap.current,
         speed,
       );
     if (lower.current)
       lower.current.position.y = THREE.MathUtils.lerp(
         lower.current.position.y,
-        exploded ? -0.8 : 0,
+        exploded ? -0.8 : -(1 - gathering) * 0.7,
         speed,
       );
     if (blade.current) {
@@ -151,8 +170,25 @@ function Saber({
     return new THREE.CatmullRomCurve3(pts);
   }, [radius]);
   return (
-    <group ref={root} rotation={[0, 0.25, -0.53]}>
-      <group ref={lower}>
+    <group
+      ref={root}
+      rotation={[
+        0,
+        arrival && !reducedMotion && !cinematic ? -1.25 : 0.25,
+        -0.53,
+      ]}
+    >
+      <pointLight
+        ref={entranceLight}
+        position={[-3, 1, 3]}
+        color="#c1ddff"
+        intensity={0}
+        distance={8}
+      />
+      <group
+        ref={lower}
+        position={[0, arrival && !reducedMotion && !cinematic ? -0.7 : 0, 0]}
+      >
         <Cylinder
           y={-0.8}
           h={2.15}
@@ -245,7 +281,10 @@ function Saber({
           />
         </mesh>
       </group>
-      <group ref={upper}>
+      <group
+        ref={upper}
+        position={[0, arrival && !reducedMotion && !cinematic ? 0.95 : 0, 0]}
+      >
         <Cylinder y={1.15} h={0.15} r={radius + 0.018} color={finish.color} />
         <Cylinder y={1.4} h={0.38} r={slim ? 0.14 : 0.2} color={accent} />
         {[1.25, 1.33, 1.41, 1.49, 1.57].map((y) => (
@@ -380,8 +419,11 @@ function Saber({
 }
 function SceneReady({ onReady }: { onReady: () => void }) {
   const { gl } = useThree();
+  const renderedFrames = useRef(0);
+  useFrame(() => {
+    if (++renderedFrames.current === 3) onReady();
+  });
   useEffect(() => {
-    onReady();
     const el = gl.domElement;
     const listener = (e: Event) => {
       e.preventDefault();
@@ -401,6 +443,7 @@ export default function SaberScene({
   zoom = 1,
   onReady,
   onUnavailable,
+  arrival = false,
 }: {
   config: Config;
   exploded?: boolean;
@@ -411,6 +454,7 @@ export default function SaberScene({
   zoom?: number;
   onReady: () => void;
   onUnavailable: () => void;
+  arrival?: boolean;
 }) {
   const [supported, setSupported] = useState(true);
   useEffect(() => {
@@ -478,6 +522,7 @@ export default function SaberScene({
           ignited={ignited}
           cinematic={cinematic}
           reducedMotion={reducedMotion}
+          arrival={arrival}
         />
       </group>
       {!cinematic && (
