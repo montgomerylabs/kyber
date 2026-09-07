@@ -1,5 +1,9 @@
 # KYBER — The lightsaber atelier
 
+A [Montgomery Labs](https://github.com/montgomerylabs) / Coding Cave project.
+
+Repository: [montgomerylabs/kyber](https://github.com/montgomerylabs/kyber).
+
 A premium, interactive lightsaber configurator built with **TanStack Start, React 19, TypeScript, Tailwind CSS 4, and shadcn/ui**. Three.js and React Three Fiber render a modular 3D lightsaber with procedural studio lighting.
 
 ## Run locally
