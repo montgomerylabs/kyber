@@ -39,6 +39,7 @@ import {
 import { Input } from '@/components/ui/input';
 import {
   accents,
+  buildCardFilename,
   buildDescription,
   crystals,
   resolveCrystal,
@@ -330,7 +331,7 @@ export function Atelier() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `kyber-${(config.name || 'saber').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.png`;
+      a.download = buildCardFilename(config.name);
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       setNotice('Your build card is ready. May it travel far.');

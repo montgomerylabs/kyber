@@ -130,3 +130,16 @@ export function resolveCrystal(value: Config['crystal']) {
 export function buildDescription(c: Config) {
   return `${hilts.find((x) => x.id === c.hilt)!.name} / ${finishes.find((x) => x.id === c.finish)!.name} / ${resolveCrystal(c.crystal).name}`;
 }
+export function buildCardFilename(name: string) {
+  const saber = name
+    .replace(/[\u0000-\u001f\u007f]/g, '')
+    // Reserved by Windows and the macOS Finder; spaced so words stay apart.
+    .replace(/[/\\:*?"<>|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    // A leading dot hides the file; Windows drops trailing dots.
+    .replace(/^\.+|\.+$/g, '')
+    .trim()
+    .slice(0, 32)
+    .trim();
+  return `${saber || 'Untitled'} — KYBER.png`;
+}

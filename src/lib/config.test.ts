@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   accents,
   resolveCrystal,
+  buildCardFilename,
   buildDescription,
   crystals,
   defaultConfig,
@@ -62,6 +63,28 @@ test('custom crystal colors round trip and normalize safely', () => {
       'violet',
     );
   }
+});
+
+test('build card filenames keep the saber name readable and safe', () => {
+  assert.equal(buildCardFilename('Afterglow'), 'Afterglow — KYBER.png');
+  assert.equal(
+    buildCardFilename('Ahsoka’s Light ✨'),
+    'Ahsoka’s Light ✨ — KYBER.png',
+  );
+  assert.equal(
+    buildCardFilename('Étoile du Soir'),
+    'Étoile du Soir — KYBER.png',
+  );
+  for (const blank of ['', '   ', '...', '\u0000/\\:*?"<>|'])
+    assert.equal(buildCardFilename(blank), 'Untitled — KYBER.png');
+  assert.equal(buildCardFilename('.hidden.'), 'hidden — KYBER.png');
+  assert.equal(
+    buildCardFilename('Dark:  Star/Rising'),
+    'Dark Star Rising — KYBER.png',
+  );
+  assert.ok(
+    !/[/\\:*?"<>|\u0000-\u001f]/.test(buildCardFilename('a'.repeat(70))),
+  );
 });
 
 test('custom crystal color and description reach rendering and exports', () => {
