@@ -25,6 +25,27 @@ npm run build
 
 TanStack Start prerenders the landing page and `/build` route into `dist/client` for static hosting. The 3D module loads after hydration. No database, accounts, API keys, or external model assets are required.
 
+## Docker / Dokploy
+
+```sh
+docker build -t kyber .
+docker run --rm -p 8080:8080 kyber
+```
+
+Open http://localhost:8080. The multi-stage image builds with Node.js 22 and serves only `dist/client` using unprivileged Nginx on port **8080**. It supports direct builder links, compression, long-lived caching for hashed assets, and a `/healthz` health check. No environment variables or persistent volumes are required.
+
+In Dokploy, create an application connected to `montgomerylabs/kyber`, branch `main`, then set:
+
+- **Build Type:** Dockerfile
+- **Dockerfile Path:** `Dockerfile`
+- **Docker Context Path:** `.`
+- **Docker Build Stage:** leave blank (uses the final `runtime` stage)
+- **Domain Container Port:** `8080`
+
+Add your domain and enable HTTPS in Dokploy, then deploy. Domain routing does not require publishing a separate host port under Advanced → Ports. See the [Dokploy Dockerfile settings](https://docs.dokploy.com/docs/core/applications/build-type) and [domain port guidance](https://docs.dokploy.com/docs/core/troubleshooting/domains).
+
+This image serves the current static application. If server functions or other backend features are added later, update the runtime to serve those features.
+
 ## Features
 
 - Cinematic galactic landing page with animated atmosphere and an entrance transition.

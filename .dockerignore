@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+.openai
+.tanstack
+.wrangler
+.env*
+*.pem
+*.key
+*.log
+*.tsbuildinfo
+.DS_Store
+coverage
+outputs
+work
