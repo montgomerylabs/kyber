@@ -705,6 +705,7 @@ export function Atelier() {
                     {crystals.map((c) => (
                       <label
                         key={c.id}
+                        style={{ '--gem-color': c.color } as CSSProperties}
                         className={`crystal-option ${config.crystal === c.id ? 'selected' : ''}`}
                       >
                         <RadioGroupItem value={c.id} className="sr-only" />

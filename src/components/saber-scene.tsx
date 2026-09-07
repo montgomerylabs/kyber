@@ -369,11 +369,11 @@ function Saber({
         <meshPhysicalMaterial
           color={light}
           emissive={light}
-          emissiveIntensity={1.5}
-          roughness={0.12}
-          metalness={0.1}
-          transparent
-          opacity={0.9}
+          emissiveIntensity={0.65}
+          roughness={0.3}
+          metalness={0}
+          envMapIntensity={0.15}
+          toneMapped={false}
         />
       </mesh>
       {exploded && (
@@ -386,16 +386,17 @@ function Saber({
       )}
       <group position={[0, 2.19, 0]} ref={blade} scale={[1, 0.001, 1]}>
         <mesh position={[0, 2.5, 0]}>
-          <capsuleGeometry args={[0.095, 4.8, 8, 24]} />
-          <meshBasicMaterial color="#fff" />
+          <capsuleGeometry args={[0.052, 4.8, 8, 24]} />
+          <meshBasicMaterial color="#fff" toneMapped={false} />
         </mesh>
-        {[0.13, 0.18, 0.27].map((r, i) => (
+        {[0.13, 0.2, 0.3].map((r, i) => (
           <mesh key={r} position={[0, 2.5, 0]}>
             <capsuleGeometry args={[r, 4.8, 8, 24]} />
             <meshBasicMaterial
               color={light}
               transparent
-              opacity={[0.65, 0.18, 0.06][i]}
+              opacity={[0.85, 0.24, 0.08][i]}
+              toneMapped={false}
               depthWrite={false}
               blending={THREE.AdditiveBlending}
             />

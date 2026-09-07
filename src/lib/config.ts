@@ -42,31 +42,31 @@ export const crystals = [
   {
     id: 'blue',
     name: 'Blue',
-    color: '#479eff',
+    color: '#2583ff',
     description: 'Clarity of purpose. Strength in action.',
   },
   {
     id: 'green',
     name: 'Green',
-    color: '#68db9a',
+    color: '#20e578',
     description: 'A quiet mind. A deeper connection.',
   },
   {
     id: 'violet',
     name: 'Violet',
-    color: '#a78bfa',
+    color: '#9345ff',
     description: 'A presence all its own.',
   },
   {
     id: 'amber',
     name: 'Amber',
-    color: '#ffbb50',
+    color: '#ffad16',
     description: 'A light beyond the familiar.',
   },
   {
     id: 'red',
     name: 'Red',
-    color: '#ff5368',
+    color: '#ff2845',
     description: 'Uncompromising. Unforgettable.',
   },
 ] as const;

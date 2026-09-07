@@ -1994,13 +1994,24 @@ body {
   color: #979fad;
 }
 .crystal-option.selected {
-  border-color: #83735b;
-  background: #262421;
+  border-color: var(--gem-color);
+  background: color-mix(in srgb, var(--gem-color) 16%, #10141d);
+  color: #f0f2f7;
 }
 .crystal-swatch {
-  background: color-mix(in srgb, var(--gem-color), #10141d 85%);
-  color: var(--gem-color);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--gem-color), transparent 90%);
+  background: radial-gradient(
+    circle at 30% 25%,
+    color-mix(in srgb, var(--gem-color) 72%, white),
+    var(--gem-color) 48%,
+    color-mix(in srgb, var(--gem-color) 55%, #10141d)
+  );
+  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--gem-color) 65%, white);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--gem-color) 30%, transparent);
+}
+.crystal-swatch > svg {
+  fill: color-mix(in srgb, var(--gem-color) 75%, transparent);
+  filter: drop-shadow(0 1px 2px #0008);
 }
 .crystal-story {
   background: radial-gradient(
