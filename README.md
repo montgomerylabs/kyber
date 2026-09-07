@@ -34,6 +34,7 @@ TanStack Start prerenders the landing page and `/build` route into `dist/client`
 - Named builds encoded in validated URL parameters.
 - Portrait PNG cards captured from the actual configured WebGL model.
 - Keyboard controls, modal focus management, reduced motion, and responsive layout.
+- A mobile layout with native scrolling, pinned preview, large touch controls, an Explore gesture mode, and safe-area-aware bottom actions.
 
 Design decisions and acceptance criteria are in [docs/design.md](docs/design.md).
 

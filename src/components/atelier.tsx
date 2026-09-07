@@ -114,6 +114,8 @@ export function Atelier() {
   const [config, setConfig] = useState<Config>(defaultConfig);
   const [step, setStep] = useState('hilt');
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [touchInspect, setTouchInspect] = useState(false);
   const [ready, setReady] = useState(false);
   const [arrival, setArrival] = useState(true);
   const [sceneFailed, setSceneFailed] = useState(false);
@@ -133,6 +135,15 @@ export function Atelier() {
   const igniteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sceneReady = useCallback(() => setReady(true), []);
   const audio = useSaberAudio(muted);
+  const chooseStep = (next: string) => {
+    setStep(next);
+    setTouchInspect(false);
+    if (isMobile)
+      window.scrollTo({
+        top: 0,
+        behavior: reducedMotion ? 'instant' : 'smooth',
+      });
+  };
   useEffect(() => {
     if (!ready) return;
     const done = setTimeout(() => setArrival(false), 3500);
@@ -141,6 +152,15 @@ export function Atelier() {
   useEffect(() => {
     setConfig(parseConfig(window.location.search));
     setMounted(true);
+    const mobile = window.matchMedia(
+      '(max-width: 760px), (max-width: 1024px) and (pointer: coarse)',
+    );
+    const mobileChange = () => {
+      setIsMobile(mobile.matches);
+      setTouchInspect(false);
+    };
+    mobileChange();
+    mobile.addEventListener('change', mobileChange);
     const m = window.matchMedia('(prefers-reduced-motion: reduce)');
     setReducedMotion(m.matches);
     const change = () => setReducedMotion(m.matches);
@@ -148,6 +168,7 @@ export function Atelier() {
     const pop = () => setConfig(parseConfig(window.location.search));
     window.addEventListener('popstate', pop);
     return () => {
+      mobile.removeEventListener('change', mobileChange);
       m.removeEventListener('change', change);
       window.removeEventListener('popstate', pop);
     };
@@ -316,7 +337,7 @@ export function Atelier() {
   };
   return (
     <div
-      className={`atelier atelier-workspace ${ready ? 'atelier-ready' : ''}`}
+      className={`atelier atelier-workspace ${ready ? 'atelier-ready' : ''} ${isMobile ? 'is-mobile' : ''} ${touchInspect ? 'touch-inspecting' : ''}`}
       style={{ '--crystal': crystal.color } as CSSProperties}
     >
       <a className="skip-link" href="#configurator">
@@ -401,6 +422,8 @@ export function Atelier() {
                     <SaberScene
                       config={config}
                       arrival={arrival}
+                      interactive={cinematic || !isMobile || touchInspect}
+                      mobile={isMobile}
                       exploded={exploded || step === 'crystal'}
                       ignited={ignited}
                       cinematic={cinematic}
@@ -444,20 +467,33 @@ export function Atelier() {
                   </span>
                   <div className="studio-tools">
                     <button
-                      className="round-control"
+                      className={`mobile-inspect-toggle ${touchInspect ? 'is-on' : ''}`}
+                      aria-pressed={touchInspect}
+                      onClick={() => setTouchInspect(!touchInspect)}
+                      aria-label={
+                        touchInspect
+                          ? 'Finish inspection and enable page scrolling'
+                          : 'Enable touch rotation of the saber'
+                      }
+                    >
+                      <RotateCw size={16} />
+                      {touchInspect ? 'Done' : 'Explore'}
+                    </button>
+                    <button
+                      className="round-control orbit-nudge"
                       aria-label="Rotate saber left"
                       onClick={() => setRotation((r) => r - 0.5)}
                     >
                       <RotateCcw size={16} />
                     </button>
                     <button
-                      className="round-control"
+                      className="round-control orbit-nudge"
                       aria-label="Rotate saber right"
                       onClick={() => setRotation((r) => r + 0.5)}
                     >
                       <RotateCw size={16} />
                     </button>
-                    <span className="tool-divider" />
+                    <span className="tool-divider rotation-divider" />
                     <button
                       className="round-control"
                       aria-label="Zoom out"
@@ -521,7 +557,7 @@ export function Atelier() {
             )}
           </div>
           <div className="configuration-panel">
-            <Tabs value={step} onValueChange={(v) => setStep(String(v))}>
+            <Tabs value={step} onValueChange={(v) => chooseStep(String(v))}>
               <TabsList
                 variant="line"
                 className="step-tabs"
@@ -560,6 +596,7 @@ export function Atelier() {
                     </label>
                   ))}
                 </RadioGroup>
+                <p className="mobile-hilt-detail">{hilt.description}</p>
                 <Options
                   label="Emitter"
                   value={config.emitter}
@@ -709,7 +746,7 @@ export function Atelier() {
                     variant="ghost"
                     className="dock-back"
                     onClick={() =>
-                      setStep(step === 'crystal' ? 'finish' : 'hilt')
+                      chooseStep(step === 'crystal' ? 'finish' : 'hilt')
                     }
                     aria-label={
                       step === 'crystal' ? 'Back to finish' : 'Back to hilt'
@@ -724,7 +761,7 @@ export function Atelier() {
                   onClick={() =>
                     step === 'crystal'
                       ? ignite()
-                      : setStep(step === 'hilt' ? 'finish' : 'crystal')
+                      : chooseStep(step === 'hilt' ? 'finish' : 'crystal')
                   }
                 >
                   {step === 'crystal' ? (

@@ -444,6 +444,8 @@ export default function SaberScene({
   onReady,
   onUnavailable,
   arrival = false,
+  interactive = true,
+  mobile = false,
 }: {
   config: Config;
   exploded?: boolean;
@@ -455,6 +457,8 @@ export default function SaberScene({
   onReady: () => void;
   onUnavailable: () => void;
   arrival?: boolean;
+  interactive?: boolean;
+  mobile?: boolean;
 }) {
   const [supported, setSupported] = useState(true);
   useEffect(() => {
@@ -478,14 +482,14 @@ export default function SaberScene({
   return (
     <Canvas
       key={cinematic ? 'cinema' : 'studio'}
-      dpr={[1, 1.75]}
+      dpr={[1, mobile ? 1.5 : 1.75]}
       camera={{
         position: [0, 0, cinematic ? 13 : 10],
         fov: cinematic ? 47 : 37,
       }}
       gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
       shadows={{ type: THREE.PCFShadowMap }}
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: interactive ? 'none' : 'pan-y' }}
     >
       <ambientLight intensity={cinematic ? 0.25 : 0.38} />
       <directionalLight
@@ -537,6 +541,7 @@ export default function SaberScene({
         />
       )}
       <OrbitControls
+        enabled={interactive}
         enablePan={false}
         enableZoom={true}
         minDistance={cinematic ? 11 : 6.5}
