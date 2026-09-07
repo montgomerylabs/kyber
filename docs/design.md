@@ -28,3 +28,7 @@ Keyboard-operable tabs/radio groups/dialogs, readable contrast, visible focus, m
 ## Acceptance
 
 Every option changes the model without resetting other choices. Component dimensions align across all combinations. Share links round-trip every field. Ignition toggles blade and audio together. PNG contains the configured saber and readable build details. Type checking, production build, and focused configuration tests pass.
+
+## Death Star arrival
+
+On a fresh landing-page load, the loaded artwork triggers a 5.6-second establishing shot: a close, dim view pulls back into the hangar, the station emerges from shadow, and a cool reflected-light pass sweeps over the artwork. The headline and invitation follow in a staggered reveal; the scene settles into the existing ambient drift. Pointer parallax stays independent of the camera animation. Navigation remains available throughout, keyboard focus reveals the main button immediately, and reduced-motion mode shows the settled composition directly. Cached and failed image loads both release the content reveal.

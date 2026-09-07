@@ -3,12 +3,15 @@ import { ArrowDownRight, ArrowUpRight, MoveUpRight } from 'lucide-react';
 
 export function Landing() {
   const [entering, setEntering] = useState(false);
+  const [sceneLoaded, setSceneLoaded] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [buildHref, setBuildHref] = useState('/build');
   const [reducedMotion, setReducedMotion] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     setBuildHref(`/build${window.location.search}`);
+    if (imageRef.current?.complete) setSceneLoaded(true);
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const change = () => setReducedMotion(media.matches);
     change();
@@ -32,7 +35,7 @@ export function Landing() {
   };
   return (
     <main
-      className={`galaxy-landing ${entering ? 'entering' : ''}`}
+      className={`galaxy-landing cinematic-arrival ${sceneLoaded ? 'scene-loaded' : ''} ${entering ? 'entering' : ''}`}
       onPointerMove={(e) => {
         if (reducedMotion || e.pointerType === 'touch') return;
         const x = (e.clientX / window.innerWidth - 0.5) * 12,
@@ -42,12 +45,24 @@ export function Landing() {
       }}
     >
       <div className="galaxy-world" ref={worldRef} aria-hidden="true">
-        <img
-          className="galaxy-art"
-          src="/images/galaxy-hangar.webp"
-          alt=""
-          fetchPriority="high"
-        />
+        <div className="galaxy-camera">
+          <div className="galaxy-drift">
+            <img
+              ref={imageRef}
+              className="galaxy-art"
+              src="/images/galaxy-hangar.webp"
+              alt=""
+              fetchPriority="high"
+              onLoad={() => setSceneLoaded(true)}
+              onError={() => setSceneLoaded(true)}
+            />
+            <img
+              className="galaxy-art death-star-light-pass"
+              src="/images/galaxy-hangar.webp"
+              alt=""
+            />
+          </div>
+        </div>
         <div className="galaxy-haze haze-one" />
         <div className="galaxy-haze haze-two" />
       </div>

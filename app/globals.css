@@ -2292,3 +2292,131 @@ body {
     transform: none !important;
   }
 }
+
+/* One continuous establishing shot. Triggered by image readiness, not a timer. */
+.galaxy-camera,
+.galaxy-drift {
+  position: absolute;
+  inset: 0;
+}
+.cinematic-arrival .galaxy-art {
+  animation: none;
+}
+.galaxy-camera {
+  transform-origin: 69% 44%;
+  animation: station-arrival 5.6s cubic-bezier(0.2, 0.65, 0.3, 1) both;
+}
+.galaxy-drift {
+  animation: galaxy-drift 36s 5.6s ease-in-out infinite alternate both;
+}
+@keyframes station-arrival {
+  0% {
+    transform: scale(1.19) translate3d(1.5%, 1%, 0);
+    filter: brightness(0.12) blur(2px);
+  }
+  24% {
+    filter: brightness(0.34) blur(0.6px);
+  }
+  58% {
+    filter: brightness(0.87) blur(0);
+  }
+  100% {
+    transform: scale(1) translate3d(0, 0, 0);
+    filter: brightness(1) blur(0);
+  }
+}
+.death-star-light-pass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: brightness(2.4) saturate(0.65);
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(
+    105deg,
+    transparent 37%,
+    #000 48%,
+    transparent 59%
+  );
+  mask-size: 300% 100%;
+  mask-repeat: no-repeat;
+  animation: station-light-pass 4.4s 0.7s ease-in-out both !important;
+}
+@keyframes station-light-pass {
+  0% {
+    mask-position: 130% 0;
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.05;
+  }
+  45% {
+    opacity: 0.48;
+  }
+  76% {
+    opacity: 0.18;
+  }
+  100% {
+    mask-position: -35% 0;
+    opacity: 0;
+  }
+}
+.cinematic-arrival .galaxy-kicker {
+  animation-delay: 1.5s;
+}
+.cinematic-arrival .galaxy-hero h1 {
+  animation-delay: 1.8s;
+}
+.cinematic-arrival .galaxy-hero p {
+  animation-delay: 2.15s;
+}
+.cinematic-arrival .journey-button {
+  animation-delay: 2.35s;
+}
+.cinematic-arrival .journey-note {
+  animation-delay: 2.5s;
+}
+.cinematic-arrival .galaxy-coordinate {
+  animation-delay: 3s;
+}
+.cinematic-arrival .galaxy-bottom {
+  animation-delay: 2.7s;
+}
+.cinematic-arrival:not(.scene-loaded) .galaxy-camera,
+.cinematic-arrival:not(.scene-loaded) .galaxy-drift,
+.cinematic-arrival:not(.scene-loaded) .death-star-light-pass,
+.cinematic-arrival:not(.scene-loaded) .galaxy-hero > *,
+.cinematic-arrival:not(.scene-loaded) .galaxy-coordinate,
+.cinematic-arrival:not(.scene-loaded) .galaxy-bottom {
+  animation-play-state: paused !important;
+}
+/* Keyboard users can enter immediately, without waiting for the reveal. */
+.cinematic-arrival .journey-button:focus-visible {
+  animation: none;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+@media (max-width: 760px) {
+  .galaxy-camera {
+    transform-origin: 62% 35%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .galaxy-camera,
+  .galaxy-drift {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .death-star-light-pass {
+    display: none;
+  }
+  .cinematic-arrival .galaxy-hero > *,
+  .cinematic-arrival .galaxy-coordinate,
+  .cinematic-arrival .galaxy-bottom {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
