@@ -1,0 +1,221 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "kyber-lightsaber-atelier",
+  "projectName": "KYBER — The Lightsaber Atelier",
+  "tagline": "A cinematic 3D lightsaber configurator that turns every build into a shareable link.",
+  "client": {
+    "name": "Personal",
+    "industry": "Interactive entertainment / creative technology",
+    "type": "personal",
+    "confidential": false
+  },
+  "role": "Solo developer and designer",
+  "responsibilities": [
+    "Designed and built the entire product end to end, from the cinematic landing page through the configurator, ignition sequence, and export flow",
+    "Modeled and shaded the modular lightsaber procedurally in Three.js and React Three Fiber, with no external 3D model assets",
+    "Built a locally generated studio lighting environment using Lightformer area lights, contact shadows, and physically based materials",
+    "Implemented URL-as-state configuration with catalog validation, so all 1,215 preset combinations plus custom hex crystals round-trip through a shareable link",
+    "Synthesized the ignition, hum, and extinguish audio at runtime with the Web Audio API instead of shipping audio files",
+    "Built the PNG build-card exporter that composites the live WebGL frame onto a 2D canvas with typeset build details",
+    "Owned accessibility: keyboard-operable tabs, radio groups and dialogs, focus trapping, reduced-motion support, and 44px touch targets",
+    "Built the responsive mobile layout, including native document scrolling, an opt-in Explore gesture mode, and safe-area-aware bottom sheets",
+    "Authored the multi-stage Docker image and hardened Nginx config, and deployed the site to a custom domain via Dokploy",
+    "Wrote the configuration test suite covering every option combination, malformed URL input, and filename normalization"
+  ],
+  "timeframe": {
+    "start": "2026-09",
+    "end": "present",
+    "durationMonths": 1
+  },
+  "status": "active",
+  "teamSize": 1,
+  "techStack": [
+    "TypeScript",
+    "React 19",
+    "TanStack Start",
+    "TanStack Router",
+    "Three.js",
+    "React Three Fiber",
+    "@react-three/drei",
+    "WebGL",
+    "Web Audio API",
+    "Canvas 2D API",
+    "Tailwind CSS 4",
+    "shadcn/ui",
+    "Base UI",
+    "Vite 8",
+    "Node.js 22",
+    "Docker",
+    "Nginx",
+    "Dokploy",
+    "oxlint",
+    "oxfmt",
+    "node:test"
+  ],
+  "techStackDetailed": {
+    "languages": ["TypeScript", "CSS", "HTML"],
+    "frameworks": [
+      "React 19",
+      "TanStack Start",
+      "TanStack Router",
+      "React Three Fiber",
+      "Tailwind CSS 4",
+      "shadcn/ui",
+      "Base UI"
+    ],
+    "databases": [],
+    "tools": [
+      "Vite 8",
+      "Node.js 22",
+      "Three.js",
+      "@react-three/drei",
+      "Docker",
+      "Nginx",
+      "Dokploy",
+      "oxlint",
+      "oxfmt",
+      "node:test",
+      "TypeScript compiler"
+    ]
+  },
+  "infrastructure": {
+    "deployment": ["Dokploy", "Nginx (static)", "OpenAI Sites (static hosting config)"],
+    "cloudProviders": [],
+    "cicd": [],
+    "containerization": ["Docker"],
+    "other": [
+      "Multi-stage Docker build: Node 22 Bookworm slim builder to unprivileged Nginx Alpine runtime on port 8080",
+      "Container HEALTHCHECK against an Nginx /healthz endpoint",
+      "Immutable one-year caching for content-hashed assets, no-cache revalidation for HTML",
+      "Static prerendering of the landing and /build routes into dist/client",
+      "No environment variables, secrets, or persistent volumes required"
+    ]
+  },
+  "integrations": [],
+  "aiUsage": {
+    "used": true,
+    "summary": "The shipped product contains no runtime AI: there are no model calls, API keys, or inference at request time. AI was used in the build process instead. The cinematic Death Star hangar background was produced with a generative image tool from a detailed art-direction prompt preserved in docs/artwork.md, then converted to WebP for delivery. The application code was also largely AI-assisted, written with an AI coding agent under human direction and review.",
+    "providers": ["OpenAI"],
+    "models": [],
+    "useCases": [
+      "Generative image art for the landing page background",
+      "AI-assisted code authoring and refactoring under human direction"
+    ]
+  },
+  "links": [
+    {
+      "label": "Live site",
+      "url": "https://kyber.montgomerylabs.tech",
+      "type": "live"
+    },
+    {
+      "label": "GitHub repository",
+      "url": "https://github.com/montgomerylabs/kyber",
+      "type": "repo"
+    },
+    {
+      "label": "Design decisions and acceptance criteria",
+      "url": "https://github.com/montgomerylabs/kyber/blob/main/docs/design.md",
+      "type": "docs"
+    }
+  ],
+  "description": "KYBER is a browser-based 3D lightsaber configurator built as a single-page TanStack Start application in React 19 and TypeScript. A full-screen cinematic landing page opens on an Imperial hangar looking out at the Death Star, running a timed establishing shot with pointer parallax and staggered text reveals, then hands off to the atelier through a TanStack Router client navigation with a View Transitions crossfade. The builder route preloads its own 3D module on idle, hover, and focus so entry is seamless.\n\nThe atelier is a split working surface. On the left, Three.js and React Three Fiber render a modular hilt built entirely from procedural geometry with physically based materials; there are no downloaded model or texture assets. Lighting comes from a locally generated environment of Lightformer area lights plus contact shadows, so the studio look ships in the bundle rather than as an HDRI. Users orbit, zoom, and open an exploded assembly view. On the right, numbered Hilt, Finish, and Crystal steps use accessible shadcn/ui tabs and radio groups over Base UI primitives, and a fixed dock summarizes the build and carries the ignition action.\n\nAll application state lives in the URL. Configuration is serialized to query parameters and validated on read against option catalogs, with unknown values falling back to defaults and names control-stripped and length-bounded, so a shared link reopens an exact build with no database, accounts, or API keys anywhere in the system. The catalog yields 1,215 preset combinations, extended by a custom crystal color wheel that accepts touch input, keyboard-accessible sliders, and hex entry, with custom colors carried through links and exports.\n\nIgniting the saber enters a focus-trapped full-screen cinematic mode with an animated blade and color spill. Its audio is synthesized live through the Web Audio API — oscillator sweeps through a lowpass filter for ignition and extinction, and layered detuned oscillators for the hum — so no audio files are shipped, and the context is unlocked only on explicit interaction and suspended when the tab is hidden. Users can name a build and export a 1080x1350 portrait PNG card, composited on a 2D canvas by scaling the live WebGL frame into a branded layout with typeset build details and a filename derived from the saber's name.\n\nAccessibility and resilience are handled throughout: keyboard-operable controls, focus trapping and restoration in dialogs, reduced-motion paths for every animation, a bounded device pixel ratio, a lazily loaded 3D module behind an error boundary with an explicit WebGL failure message, and actionable feedback when clipboard or export operations fail. The mobile layout switches to native document scrolling with a pinned preview, an opt-in Explore mode that hands touch control to OrbitControls only when requested, 44-pixel touch targets, and safe-area-aware bottom sheets. The app is prerendered to static files and deployed as a multi-stage Docker image that serves dist/client from unprivileged Nginx on port 8080 with gzip, immutable asset caching, and a health check.",
+  "overview": "KYBER is a cinematic web experience that lets anyone design their own lightsaber and share it. It opens on a film-style shot of the Death Star seen from an abandoned hangar, then moves into an \"atelier\" where you choose a hilt, a finish, and a crystal, watch the saber turn in real time, and finally ignite the blade in a full-screen moment with its own sound. I designed and built the whole thing solo, from the 3D work and the visual design to the deployment.\n\nEverything you see is generated in the browser. The saber is not a downloaded 3D model but geometry built in code, lit by a studio environment that ships inside the app, and the ignition sound is synthesized on the fly rather than played from an audio file. There are no accounts and no database anywhere in the product: your entire build is encoded into the web address, so sending someone the link is enough for them to open your exact saber. You can also name a build and download it as a poster-style image card captured from the live 3D view.\n\nThe experience is designed to work for everyone. It is fully keyboard-operable, respects the system setting for reduced motion, and reshapes itself on phones with large touch targets and a dedicated mode for spinning the saber with a finger. The site is prerendered to static files and served from a hardened container behind Nginx, which keeps it fast and inexpensive to run. It is an unofficial fan project, not affiliated with Lucasfilm or Disney.",
+  "keyFeatures": [
+    "Cinematic Death Star landing sequence with pointer parallax, staggered reveals, and a View Transitions handoff into the builder",
+    "Real-time 3D configurator with orbit, zoom, and an exploded assembly view",
+    "1,215 preset combinations across hilt, emitter, grip, finish, accent, and crystal",
+    "Custom crystal color wheel with touch input, keyboard-accessible sliders, and hex entry",
+    "Full-screen cinematic ignition with animated blade, color spill, and synthesized audio",
+    "Original ignition, hum, and extinguish sound synthesized at runtime with the Web Audio API",
+    "Shareable links that encode and revalidate every choice, with no account or database",
+    "Downloadable 1080x1350 PNG build card composited from the live WebGL frame",
+    "Crystal chamber reveal and a one-time floating assembly animation on entry",
+    "Full keyboard operation, focus management, reduced-motion support, and WebGL failure fallback",
+    "Mobile layout with native scrolling, pinned preview, opt-in Explore gesture mode, and safe-area-aware bottom sheets"
+  ],
+  "highlights": [
+    "Designed and shipped a cinematic 3D lightsaber configurator solo, from procedural Three.js modeling and studio lighting through visual design, accessibility, containerization, and production deployment",
+    "Eliminated all backend infrastructure by encoding application state in validated URL parameters, delivering 1,215 shareable build combinations plus custom colors with no database, accounts, or API keys",
+    "Modeled and shaded the saber entirely from procedural geometry and a locally generated Lightformer environment, removing every external 3D model, texture, and HDRI dependency from the bundle",
+    "Synthesized all ignition and hum audio at runtime with the Web Audio API, shipping zero audio assets while honoring browser autoplay policies and suspending on tab hide",
+    "Built a client-side export pipeline that composites the live WebGL frame onto a 2D canvas to produce a 1080x1350 branded PNG build card with typeset details and filesystem-safe filenames",
+    "Engineered accessibility throughout: keyboard-operable tabs, radio groups, and dialogs, focus trapping and restoration, reduced-motion paths for every animation, and 44px touch targets",
+    "Rebuilt the mobile experience around native document scrolling with an opt-in Explore gesture mode, resolving the conflict between page scrolling and 3D orbit controls on touch devices",
+    "Diagnosed and fixed a mobile dialog rendering half off-screen, tracing it to Tailwind v4 centering via the CSS translate property while the override reset only transform",
+    "Cut the production image to a static Nginx runtime with a multi-stage Docker build, adding a health check, immutable hashed-asset caching, and an unprivileged non-root container",
+    "Wrote a test suite that exhaustively verifies all 1,215 configuration combinations round-trip through share links, plus malformed URL input and filename normalization"
+  ],
+  "challenges": [
+    {
+      "problem": "Making a lightsaber look like a premium physical object in a browser without shipping heavyweight 3D model, texture, or HDRI assets.",
+      "solution": "Built the hilt from modular procedural geometry with physically based materials, and generated the studio environment locally from Lightformer area lights plus contact shadows, so the entire look compiles into the bundle."
+    },
+    {
+      "problem": "Letting users share an exact build without a backend, accounts, or storage.",
+      "solution": "Made the URL the single source of truth: configuration is serialized to versioned query parameters and validated on read against option catalogs, with unknown values falling back to defaults and names control-stripped and length-bounded."
+    },
+    {
+      "problem": "On touch devices, OrbitControls captured every gesture, so users could not scroll past the 3D preview.",
+      "solution": "Disabled orbit controls by default on mobile and set the canvas to pan-y so swipes scroll the page, then added an explicit Explore toggle that hands control to the saber and a Done action that returns to normal scrolling."
+    },
+    {
+      "problem": "Exporting a build card required reading pixels back from a WebGL canvas, which is normally cleared after each frame.",
+      "solution": "Enabled preserveDrawingBuffer on the renderer, then scaled the live canvas into a 1080x1350 2D canvas composition with typeset build details and exported it via toBlob and an object URL."
+    },
+    {
+      "problem": "The mobile save dialog rendered half off the left edge of the screen despite bottom-sheet styles that reset transform.",
+      "solution": "Traced it to Tailwind CSS 4 centering the dialog with the CSS translate property rather than transform, so the reset never applied; reset translate as well and anchored the sheet with explicit left and right edges plus safe-area padding."
+    },
+    {
+      "problem": "Delivering saber audio without shipping sound files or violating browser autoplay policies.",
+      "solution": "Synthesized ignition and extinction as filtered oscillator frequency sweeps and the hum as layered detuned oscillators, creating the AudioContext only on explicit user interaction and suspending it on visibility change."
+    },
+    {
+      "problem": "Keeping a heavy WebGL scene from blocking first paint or breaking on unsupported hardware.",
+      "solution": "Prerendered the routes to static HTML, lazy-loaded the 3D module behind Suspense and an error boundary with an explicit WebGL failure message, preloaded it on idle, hover, and focus, and capped the device pixel ratio lower on mobile."
+    }
+  ],
+  "outcomes": {
+    "summary": "Deployed and publicly available at kyber.montgomerylabs.tech, served as a prerendered static site from a containerized Nginx runtime that requires no database, environment variables, or persistent storage. Automated tests confirm all 1,215 configuration combinations survive a share-link round trip.",
+    "metrics": []
+  },
+  "domain": "Interactive 3D web experience / product configurator",
+  "tags": [
+    "web-app",
+    "3d",
+    "webgl",
+    "threejs",
+    "react",
+    "typescript",
+    "product-configurator",
+    "creative-coding",
+    "web-audio",
+    "accessibility",
+    "docker",
+    "static-site",
+    "fan-project"
+  ],
+  "media": [
+    "https://raw.githubusercontent.com/montgomerylabs/kyber/main/docs/screenshots/kyber-thumbnail.png",
+    "https://raw.githubusercontent.com/montgomerylabs/kyber/main/docs/screenshots/kyber-thumbnail-ignition.png",
+    "https://raw.githubusercontent.com/montgomerylabs/kyber/main/docs/screenshots/kyber-01-landing.png",
+    "https://raw.githubusercontent.com/montgomerylabs/kyber/main/docs/screenshots/kyber-02-atelier.png",
+    "https://raw.githubusercontent.com/montgomerylabs/kyber/main/docs/screenshots/kyber-03-ignition.png",
+    "https://raw.githubusercontent.com/montgomerylabs/kyber/main/public/images/galaxy-hangar.webp"
+  ],
+  "repository": {
+    "url": "https://github.com/montgomerylabs/kyber",
+    "visibility": "public",
+    "primaryLanguage": "TypeScript"
+  },
+  "confidentiality": {
+    "isPublic": true,
+    "canShowClientName": true,
+    "canShowCode": true,
+    "notes": "Unofficial fan project; not affiliated with Lucasfilm, Disney, or Apple. Digital concepts only, not manufacturing specifications. The repository has no license file, so default copyright applies."
+  },
+  "testimonial": null,
+  "generatedAt": "2026-09-08T21:33:00Z",
+  "confidence": "high"
+}
